@@ -6,19 +6,27 @@ from typing import Optional, no_type_check
 from hydra.core.config_store import ConfigStore
 from omegaconf import OmegaConf
 
-from obfuscation_atlas.training.grpo_config import (
-    GRPOBatchingConfig,
-    GRPOConfig,
-    GRPOLossConfig,
-    GRPOModelConfig,
-    LoggingConfig,
-    OptimizerConfig,
-    RandomizationConfig,
-    TokenizerConfig,
-    VLLMConfig,
-)
+try:
+    from obfuscation_atlas.training.grpo_config import (
+        GRPOBatchingConfig,
+        GRPOConfig,
+        GRPOLossConfig,
+        GRPOModelConfig,
+        LoggingConfig,
+        OptimizerConfig,
+        RandomizationConfig,
+        TokenizerConfig,
+        VLLMConfig,
+    )
+except ImportError:
+    # afterburner not installed — GRPO training unavailable, but detector/probe code still works
+    GRPOBatchingConfig = GRPOConfig = GRPOLossConfig = GRPOModelConfig = None
+    LoggingConfig = OptimizerConfig = RandomizationConfig = TokenizerConfig = VLLMConfig = None
 from obfuscation_atlas.utils.example_types import TriggerType
-from obfuscation_atlas.utils.wandb_utils import checkpoint_path_from_wandb_id, get_latest_commit_info
+try:
+    from obfuscation_atlas.utils.wandb_utils import checkpoint_path_from_wandb_id, get_latest_commit_info
+except ImportError:
+    checkpoint_path_from_wandb_id = get_latest_commit_info = None
 
 
 class TaskType(str, Enum):
@@ -909,7 +917,11 @@ def register_configs() -> None:
     )
 
 
-register_configs()
+try:
+    register_configs()
+except Exception:
+    # GRPO configs may fail without afterburner — detector/probe code still works
+    pass
 
 
 # -----------------------------
