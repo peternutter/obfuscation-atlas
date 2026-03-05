@@ -881,6 +881,16 @@ def register_configs() -> None:
     )
     cs.store(
         group="model_preset",
+        name="qwen3_4b",
+        node={
+            "model": {"model_type": "Qwen/Qwen3-4B"},
+            "training": {"batch_size": 8},
+            "detector": {"pretrain_cfg": {"batch_size": 32}, "model_batch_size": 8},
+        },
+        package="_global_",
+    )
+    cs.store(
+        group="model_preset",
         name="gemma3_27b",
         node={
             "model": {"model_type": "google/gemma-3-27b-it"},
