@@ -33,7 +33,11 @@ def load_hf_model(
         if "gpt2" in model_name or "gemma" in model_name:
             attn_implementation = "eager"
         else:
-            attn_implementation = "flash_attention_2"
+            try:
+                import flash_attn  # noqa: F401
+                attn_implementation = "flash_attention_2"
+            except ImportError:
+                attn_implementation = "sdpa"
 
     # Check if the model is peft, and load accordingly
     try:
